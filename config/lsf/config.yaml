@@ -1,0 +1,2 @@
+cluster: "bsub -P {cluster.project} -J {cluster.jobname} -n {cluster.cores} -M {cluster.mem} -oo {cluster.outfile}"
+cluster-config: "config/cluster.json"

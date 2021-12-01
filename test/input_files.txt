@@ -1,0 +1,10 @@
+/hps/research/finn/aalmeida/data/genomes/uhgg_cleaned/MGYG-HGUT-046/MGYG-HGUT-04644/genomes1/GUT_GENOME286887.fa.gz
+/hps/research/finn/aalmeida/data/genomes/uhgg_cleaned/MGYG-HGUT-046/MGYG-HGUT-04644/genomes1/GUT_GENOME285820.fa.gz
+/hps/research/finn/aalmeida/data/genomes/uhgg_cleaned/MGYG-HGUT-046/MGYG-HGUT-04644/genomes1/GUT_GENOME285904.fa.gz
+/hps/research/finn/aalmeida/data/genomes/uhgg_cleaned/MGYG-HGUT-046/MGYG-HGUT-04644/genomes1/GUT_GENOME285756.fa.gz
+/hps/research/finn/aalmeida/data/genomes/uhgg_cleaned/MGYG-HGUT-046/MGYG-HGUT-04644/genomes1/GUT_GENOME258747.fa.gz
+/hps/research/finn/aalmeida/data/genomes/uhgg_cleaned/MGYG-HGUT-046/MGYG-HGUT-04644/genomes1/GUT_GENOME258602.fa.gz
+/hps/research/finn/aalmeida/data/genomes/uhgg_cleaned/MGYG-HGUT-046/MGYG-HGUT-04644/genomes1/GUT_GENOME259430.fa.gz
+/hps/research/finn/aalmeida/data/genomes/uhgg_cleaned/MGYG-HGUT-046/MGYG-HGUT-04644/genomes1/GUT_GENOME258572.fa.gz
+/hps/research/finn/aalmeida/data/genomes/uhgg_cleaned/MGYG-HGUT-046/MGYG-HGUT-04644/genomes1/GUT_GENOME257029.fa.gz
+/hps/research/finn/aalmeida/data/genomes/uhgg_cleaned/MGYG-HGUT-046/MGYG-HGUT-04644/genomes1/GUT_GENOME257105.fa.gz

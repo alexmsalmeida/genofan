@@ -1,0 +1,26 @@
+{
+ "__default__": {
+  "jobname": "{rule}.{wildcards}",
+  "cores": "{resources.ncores}",
+  "mem": 5000,
+  "project": "default",
+  "outfile": "{wildcards.output}/{wildcards.sample}_annotations/logs/{rule}.log"
+ },
+ "eggnog": {
+ "mem": 20000,
+ },
+ "cazy": {
+ "mem": 20000,
+ },
+ "amrfinder_setup": {
+ "cores": "1",
+ "outfile": "{db_dir}/amr_finder/setup.log"
+ },
+ "antismash_setup": {
+ "cores": "1",
+ "outfile": "{db_dir}/antismash/setup.log"
+ },
+ "antismash_run": {
+ "mem": 25000,
+ }
+}

@@ -1,0 +1,11 @@
+# Input list of genome files
+
+input_file: "/hps/research/finn/aalmeida/scripts/snakemake/genome-funcs_test/test/input_files.txt"
+
+# Directory containing necessary DBs
+
+db_dir: "/hps/research/finn/aalmeida/data/databases"
+
+# Number of cores
+
+ncores: 4
