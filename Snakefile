@@ -194,22 +194,24 @@ rule antismash_run:
     output:
         gbk = temp("{output}/{sample}_annotations/antismash/antismash.gbk"),
         json = temp("{output}/{sample}_annotations/antismash/antismash.json"),
-        clstbst = directory("{output}/{sample}_annotations/antismash/clusterblast"),
-        clstbst_txt = temp("{output}/{sample}_annotations/antismash/clusterblastoutput.txt"),
         css = temp(directory("{output}/{sample}_annotations/antismash/css")),
         images = temp(directory("{output}/{sample}_annotations/antismash/images")),
         html = temp("{output}/{sample}_annotations/antismash/index.html"),
         js = temp(directory("{output}/{sample}_annotations/antismash/js")),
-        kwnclst = directory("{output}/{sample}_annotations/antismash/knownclusterblast"),
-        kwnclst_txt = temp("{output}/{sample}_annotations/antismash/knownclusterblastoutput.txt"),
         regions = temp("{output}/{sample}_annotations/antismash/regions.js"),
-        smcogs = temp(directory("{output}/{sample}_annotations/antismash/smcogs")),
-        sbclst = temp("{output}/{sample}_annotations/antismash/subclusterblastoutput.txt"),
         svg = temp(directory("{output}/{sample}_annotations/antismash/svg")),
         main = directory("{output}/{sample}_annotations/antismash")
+    params:
+        clstbst_txt = "{output}/{sample}_annotations/antismash/clusterblastoutput.txt",
+        kwnclst_txt = "{output}/{sample}_annotations/antismash/knownclusterblastoutput.txt",
+        smcogs = "{output}/{sample}_annotations/antismash/smcogs",
+        sbclst = "{output}/{sample}_annotations/antismash/subclusterblastoutput.txt"
     conda:
         "config/envs/antismash.yml"
     resources:
         ncores = ncores
     shell:
-        "antismash -c {resources.ncores} --skip-zip-file --allow-long-headers --databases {input.db} --cc-mibig --cb-general --cb-knownclusters --cb-subclusters --asf --pfam2go --smcog-trees --genefinding-gff3 {input.gff} --output-dir {output.main} --output-basename antismash {input.fa}"
+        """
+        antismash -v -c {resources.ncores} --skip-zip-file --allow-long-headers --databases {input.db} --cc-mibig --cb-general --cb-knownclusters --cb-subclusters --asf --pfam2go --smcog-trees --genefinding-gff3 {input.gff} --output-dir {output.main} --output-basename antismash {input.fa}
+        rm -rf {params}
+        """
