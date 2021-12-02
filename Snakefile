@@ -14,7 +14,7 @@ samp2path = {}
 with open(INPUT_FILE) as f:
     for line in f:
         path = line.strip()
-        sample = os.path.basename(path.split(".")[0])
+        sample = os.path.basename(path.split(".fa")[0])
         output = os.path.dirname(path)
         SAMPLES.append(sample)
         OUTPUTS.append(output)
