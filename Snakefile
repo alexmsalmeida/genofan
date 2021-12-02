@@ -192,6 +192,7 @@ rule antismash_run:
         resfam = db_dir+"/antismash/resfam",
         tigrfam = db_dir+"/antismash/tigrfam",
     output:
+        tmp = temp(directory("{output}/{sample}_annotations/antismash_tmp")),
         gbk = temp("{output}/{sample}_annotations/antismash/antismash.gbk"),
         json = temp("{output}/{sample}_annotations/antismash/antismash.json"),
         css = temp(directory("{output}/{sample}_annotations/antismash/css")),
@@ -209,7 +210,8 @@ rule antismash_run:
     conda:
         "config/envs/antismash.yml"
     resources:
-        ncores = ncores
+        ncores = ncores,
+        tmpdir = lambda wildcards: wildcards.output+"/"+wildcards.sample+"_annotations/antismash_tmp"
     shell:
         """
         antismash -v -c {resources.ncores} --skip-zip-file --allow-long-headers --databases {input.db} --cc-mibig --cb-general --cb-knownclusters --cb-subclusters --asf --pfam2go --smcog-trees --genefinding-gff3 {input.gff} --output-dir {output.main} --output-basename antismash {input.fa}
