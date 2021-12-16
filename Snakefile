@@ -53,7 +53,7 @@ rule prokka:
         txt = temp("{output}/{sample}_annotations/prokka/{sample}.txt"),
         fa = temp("{output}/{sample}_annotations/prokka/{sample}.fa")
     params:
-        outdir = "{output}/{sample}_annotations",
+        outdir = "{output}/{sample}_annotations/prokka",
     conda:
         "config/envs/annotation.yml"
     resources:
