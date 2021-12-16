@@ -33,25 +33,25 @@ if not os.path.exists(db_dir+"/antismash"):
 
 rule targets:
     input:
-        expand(["{output}/{sample}_annotations/eggnog.emapper.annotations", "{output}/{sample}_annotations/cazy_results.tsv", "{output}/{sample}_annotations/kegg_orthologs.tsv", "{output}/{sample}_annotations/kegg_modules.tsv", "{output}/{sample}_annotations/amrfinder_results.tsv", "{output}/{sample}_annotations/antismash"], zip, output=OUTPUTS, sample=SAMPLES)
+        expand(["{output}/{sample}_annotations/prokka/{sample}.ffn", "{output}/{sample}_annotations/eggnog.emapper.annotations", "{output}/{sample}_annotations/cazy_results.tsv", "{output}/{sample}_annotations/kegg_orthologs.tsv", "{output}/{sample}_annotations/kegg_modules.tsv", "{output}/{sample}_annotations/amrfinder_results.tsv", "{output}/{sample}_annotations/antismash"], zip, output=OUTPUTS, sample=SAMPLES)
                
 rule prokka:
     input:
         lambda wildcards: samp2path[wildcards.sample]
     output:
-        faa = "{output}/{sample}_annotations/{sample}.faa",
-        gff = "{output}/{sample}_annotations/{sample}.gff",
-        fna = temp("{output}/{sample}_annotations/{sample}.fna"),
-        ffn = temp("{output}/{sample}_annotations/{sample}.ffn"),
-        err = temp("{output}/{sample}_annotations/{sample}.err"),
-        fsa = temp("{output}/{sample}_annotations/{sample}.fsa"),
-        gbk = temp("{output}/{sample}_annotations/{sample}.gbk"),
-        log = temp("{output}/{sample}_annotations/{sample}.log"),
-        sqn = temp("{output}/{sample}_annotations/{sample}.sqn"),
-        tbl = temp("{output}/{sample}_annotations/{sample}.tbl"),
-        tsv = temp("{output}/{sample}_annotations/{sample}.tsv"),
-        txt = temp("{output}/{sample}_annotations/{sample}.txt"),
-        fa = temp("{output}/{sample}_annotations/{sample}.fa")
+        faa = "{output}/{sample}_annotations/prokka/{sample}.faa",
+        ffn = "{output}/{sample}_annotations/prokka/{sample}.ffn",
+        gff = "{output}/{sample}_annotations/prokka/{sample}.gff",
+        fna = temp("{output}/{sample}_annotations/prokka/{sample}.fna"),
+        err = temp("{output}/{sample}_annotations/prokka/{sample}.err"),
+        fsa = temp("{output}/{sample}_annotations/prokka/{sample}.fsa"),
+        gbk = temp("{output}/{sample}_annotations/prokka/{sample}.gbk"),
+        log = temp("{output}/{sample}_annotations/prokka/{sample}.log"),
+        sqn = temp("{output}/{sample}_annotations/prokka/{sample}.sqn"),
+        tbl = temp("{output}/{sample}_annotations/prokka/{sample}.tbl"),
+        tsv = temp("{output}/{sample}_annotations/prokka/{sample}.tsv"),
+        txt = temp("{output}/{sample}_annotations/prokka/{sample}.txt"),
+        fa = temp("{output}/{sample}_annotations/prokka/{sample}.fa")
     params:
         outdir = "{output}/{sample}_annotations",
     conda:
@@ -71,7 +71,7 @@ rule prokka:
 
 rule eggnog:
     input:
-        "{output}/{sample}_annotations/{sample}.faa"
+        "{output}/{sample}_annotations/prokka/{sample}.faa"
     output:
         outfile = "{output}/{sample}_annotations/eggnog.emapper.annotations",
         hits = temp("{output}/{sample}_annotations/eggnog.emapper.hits"),
@@ -91,7 +91,7 @@ rule eggnog:
 
 rule cazy:
     input:
-        "{output}/{sample}_annotations/{sample}.faa"
+        "{output}/{sample}_annotations/prokka/{sample}.faa"
     output:
         dmd = temp("{output}/{sample}_annotations/diamond.out"),
         hmmer = temp("{output}/{sample}_annotations/hmmer.out"),
@@ -114,7 +114,7 @@ rule cazy:
 
 rule kofam:
     input:
-        "{output}/{sample}_annotations/{sample}.faa"
+        "{output}/{sample}_annotations/prokka/{sample}.faa"
     output:
         raw = temp("{output}/{sample}_annotations/kofam_raw.tsv"),
         kofam = "{output}/{sample}_annotations/kegg_orthologs.tsv",
@@ -148,9 +148,9 @@ rule amrfinder_setup:
 rule amrfinder_run:
     input:
         db = db_dir+"/amr_finder/latest",
-        gff = "{output}/{sample}_annotations/{sample}.gff",
-        faa = "{output}/{sample}_annotations/{sample}.faa",
-        fa = "{output}/{sample}_annotations/{sample}.fa"
+        gff = "{output}/{sample}_annotations/prokka/{sample}.gff",
+        faa = "{output}/{sample}_annotations/prokka/{sample}.faa",
+        fa = "{output}/{sample}_annotations/prokka/{sample}.fa"
     output:
         gff = temp("{output}/{sample}_annotations/amrfinder.gff"),
         amr = "{output}/{sample}_annotations/amrfinder_results.tsv"
@@ -183,8 +183,8 @@ rule antismash_setup:
 
 rule antismash_run:
     input:
-        gff = "{output}/{sample}_annotations/{sample}.gff",
-        fa = "{output}/{sample}_annotations/{sample}.fa",
+        gff = "{output}/{sample}_annotations/prokka/{sample}.gff",
+        fa = "{output}/{sample}_annotations/prokka/{sample}.fa",
         db = db_dir+"/antismash",
         cblast = db_dir+"/antismash/clusterblast",
         ccomp = db_dir+"/antismash/clustercompare",
