@@ -162,7 +162,7 @@ rule amrfinder_run:
         ncores = ncores
     shell:
         """
-        perl -pe '/^##FASTA/ && exit; s/(\W)Name=/$1OldName=/i; s/ID=([^;]+)/ID=$1;Name=$1/' {input.gff} > {output.gff}
+        grep -w CDS {input.gff} | perl -pe '/^##FASTA/ && exit; s/(\W)Name=/$1OldName=/i; s/ID=([^;]+)/ID=$1;Name=$1/' > {output.gff}
         amrfinder --threads {resources.ncores} -p {input.faa} -g {output.gff} -n {input.fa} -o {output.amr} -d {input.db}
         rm -f {params.outdir}/*.tmp.*
         """
