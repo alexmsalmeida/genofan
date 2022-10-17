@@ -8,7 +8,7 @@ This is a Snakemake workflow for a comprehensive functional annotation of a geno
 
 2. Clone repository
 ```
-git clone https://github.com/alexmsalmeida/genome-paths.git
+git clone https://github.com/alexmsalmeida/genome-funcs.git
 ```
 
 3. Download main database containing eggNOG, CAZy and KOFam annotations
