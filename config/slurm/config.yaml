@@ -1,0 +1,2 @@
+cluster: "sbatch -A {cluster.project} -p {cluster.queue} --time={cluster.time} --ntasks={cluster.cores} --mem={cluster.mem} -J {cluster.jobname} -o {cluster.outfile}"
+cluster-config: "config/cluster.json"
