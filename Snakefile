@@ -137,17 +137,20 @@ rule kofam:
 
 rule amrfinder_setup:
     input:
-        db_dir+"/amr_finder"
+        db_dir+"/amr_finder/"
     output:
-        directory(db_dir+"/amr_finder/latest")
+        directory(db_dir+"/amr_finder/2023-04-17.1")
     conda:
         "config/envs/annotation.yml"
     shell:
-        "amrfinder_update -d {input}"
+        """
+        wget ftp://ftp.ncbi.nlm.nih.gov/pathogen/Antimicrobial_resistance/AMRFinderPlus/database/3.11/2023-04-17.1/* -P {output} 
+        amrfinder_index {output}
+        """
 
 rule amrfinder_run:
     input:
-        db = db_dir+"/amr_finder/latest",
+        db = db_dir+"/amr_finder/2023-04-17.1",
         gff = "{output}/{sample}_annotations/prokka/{sample}.gff",
         faa = "{output}/{sample}_annotations/prokka/{sample}.faa",
         fa = "{output}/{sample}_annotations/prokka/{sample}.fa"
@@ -163,7 +166,7 @@ rule amrfinder_run:
     shell:
         """
         grep -w CDS {input.gff} | perl -pe '/^##FASTA/ && exit; s/(\W)Name=/$1OldName=/i; s/ID=([^;]+)/ID=$1;Name=$1/' > {output.gff}
-        amrfinder --threads {resources.ncores} -p {input.faa} -g {output.gff} -n {input.fa} -o {output.amr} -d {input.db}
+        amrfinder --threads {resources.ncores} -p {input.faa} -g {output.gff} -n {input.fa} -o {output.amr} -d {input.db} --plus
         rm -f {params.outdir}/*.tmp.*
         """
 
