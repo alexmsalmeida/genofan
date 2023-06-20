@@ -1,4 +1,4 @@
-# Genome functional annotation
+# GenomeFan - Genome functional annotation pipeline
 
 This is a Snakemake workflow for a comprehensive functional annotation of a genome FASTA using [eggNOG-mapper](https://github.com/eggnogdb/eggnog-mapper/wiki), [dbCAN2](https://bcb.unl.edu/dbCAN2/), [KOFams](https://www.genome.jp/tools/kofamkoala/), [AMRFinder](https://github.com/ncbi/amr) and [antiSMASH](https://github.com/antismash).
 
