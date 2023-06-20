@@ -8,7 +8,7 @@ This is a Snakemake workflow for a comprehensive functional annotation of a geno
 
 2. Clone repository
 ```
-git clone https://github.com/alexmsalmeida/fungenome.git
+git clone https://github.com/alexmsalmeida/genomefan.git
 ```
 
 3. Download main database containing eggNOG, CAZy and KOFam annotations
