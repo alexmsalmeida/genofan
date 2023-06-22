@@ -5,7 +5,7 @@
   "mem": 5000,
   "queue": "icelake-himem",
   "project": "ALMEIDA-SL3-CPU",
-  "time": 12:00:00,
+  "time": "12:00:00",
   "outfile": "{wildcards.output}/{wildcards.sample}_annotations/logs/{rule}.log"
  },
  "eggnog": {
