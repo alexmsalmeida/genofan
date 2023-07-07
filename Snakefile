@@ -195,6 +195,7 @@ rule antismash_run:
         resfam = db_dir+"/antismash/resfam",
         tigrfam = db_dir+"/antismash/tigrfam",
     output:
+        tsv = "{output}/{sample}_annotations/antismash/summary.tsv",
         tmp = temp(directory("{output}/{sample}_annotations/antismash_tmp")),
         gbk = temp("{output}/{sample}_annotations/antismash/antismash.gbk"),
         json = temp("{output}/{sample}_annotations/antismash/antismash.json"),
@@ -218,5 +219,6 @@ rule antismash_run:
     shell:
         """
         antismash -v -c {resources.ncores} --skip-zip-file --allow-long-headers --databases {input.db} --cc-mibig --cb-general --cb-knownclusters --cb-subclusters --asf --pfam2go --smcog-trees --genefinding-gff3 {input.gff} --output-dir {output.main} --output-basename antismash {input.fa}
+        python scripts/antismash2tsv.py {output.main} > {output.tsv}
         rm -rf {params}
         """

@@ -6,3 +6,4 @@ dependencies:
   - Flask==2.0.3
   - Jinja2==3.0.3
   - antismash==6.0.1
+  - biopython
