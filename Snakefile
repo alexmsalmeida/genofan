@@ -180,7 +180,6 @@ rule gutsmash:
         json = temp("{output}/{sample}_annotations/gutsmash/{sample}.json"),
         css = temp(directory("{output}/{sample}_annotations/gutsmash/css")),
         images = temp(directory("{output}/{sample}_annotations/gutsmash/images")),
-        html_dir = temp(directory("{output}/{sample}_annotations/gutsmash/html")),
         html_file = temp("{output}/{sample}_annotations/gutsmash/index.html"),
         js = temp(directory("{output}/{sample}_annotations/gutsmash/js")),
         regions = temp("{output}/{sample}_annotations/gutsmash/regions.js"),
@@ -188,7 +187,8 @@ rule gutsmash:
         main = directory("{output}/{sample}_annotations/gutsmash")
     params:
         gut_exec = gutsmash_dir+"/run_gutsmash.py",
-        gbk = "{output}/{sample}_annotations/gutsmash/{sample}.gbk"
+        gbk = "{output}/{sample}_annotations/gutsmash/{sample}.gbk",
+        html_dir = directory("{output}/{sample}_annotations/gutsmash/html")
     conda:
         "config/envs/gutsmash.yml"
     resources:
@@ -196,7 +196,7 @@ rule gutsmash:
     shell:
         """
         {params.gut_exec} -c {resources.ncores} --cb-knownclusters --genefinding-gff3 {input.gff} --enable-genefunctions {input.fa} --output-dir {output.main}
-        rm {params.gbk}
+        rm -rf {params.gbk} {params.html_dir}
         python scripts/gutsmash2tsv.py {output.main} {wildcards.sample} > {output.tsv}
         """
 
