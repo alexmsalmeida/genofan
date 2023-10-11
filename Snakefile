@@ -197,7 +197,7 @@ rule gutsmash:
         """
         {params.gut_exec} -c {resources.ncores} --cb-knownclusters --genefinding-gff3 {input.gff} --enable-genefunctions {input.fa} --output-dir {output.main}
         rm {params.gbk}
-        python scripts/gutsmash2tsv.py {output.main} {wildcard.sample} > {output.tsv}
+        python scripts/gutsmash2tsv.py {output.main} {wildcards.sample} > {output.tsv}
         """
 
 rule antismash_setup:
