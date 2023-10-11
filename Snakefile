@@ -3,6 +3,7 @@ import os
 configfile: 'config/config.yml'
 ncores = config['ncores']
 db_dir = config['db_dir']
+gutsmash_dir = config['gutsmash_dir']
 
 INPUT_FILE = config['input_file']
 SAMPLES = []
@@ -33,7 +34,7 @@ if not os.path.exists(db_dir+"/antismash"):
 
 rule targets:
     input:
-        expand(["{output}/{sample}_annotations/prokka/{sample}.ffn", "{output}/{sample}_annotations/eggnog.emapper.annotations", "{output}/{sample}_annotations/cazy_results.tsv", "{output}/{sample}_annotations/kegg_orthologs.tsv", "{output}/{sample}_annotations/kegg_modules.tsv", "{output}/{sample}_annotations/amrfinder_results.tsv", "{output}/{sample}_annotations/antismash"], zip, output=OUTPUTS, sample=SAMPLES)
+        expand(["{output}/{sample}_annotations/prokka/{sample}.ffn", "{output}/{sample}_annotations/eggnog.emapper.annotations", "{output}/{sample}_annotations/cazy_results.tsv", "{output}/{sample}_annotations/kegg_orthologs.tsv", "{output}/{sample}_annotations/kegg_modules.tsv", "{output}/{sample}_annotations/amrfinder_results.tsv", "{output}/{sample}_annotations/antismash/summary.tsv", "{output}/{sample}_annotations/gutsmash/summary.tsv"], zip, output=OUTPUTS, sample=SAMPLES)
                
 rule prokka:
     input:
@@ -168,6 +169,35 @@ rule amrfinder_run:
         grep -w CDS {input.gff} | perl -pe '/^##FASTA/ && exit; s/(\W)Name=/$1OldName=/i; s/ID=([^;]+)/ID=$1;Name=$1/' > {output.gff}
         amrfinder --threads {resources.ncores} -p {input.faa} -g {output.gff} -n {input.fa} -o {output.amr} -d {input.db} --plus
         rm -f {params.outdir}/*.tmp.*
+        """
+rule gutsmash:
+    input:
+        gff = "{output}/{sample}_annotations/prokka/{sample}.gff",
+        fa = "{output}/{sample}_annotations/prokka/{sample}.fa"
+    output:
+        tsv = "{output}/{sample}_annotations/gutsmash/summary.tsv",
+        zip = temp("{output}/{sample}_annotations/gutsmash/{sample}.zip"),
+        json = temp("{output}/{sample}_annotations/gutsmash/{sample}.json"),
+        css = temp(directory("{output}/{sample}_annotations/gutsmash/css")),
+        images = temp(directory("{output}/{sample}_annotations/gutsmash/images")),
+        html_dir = temp(directory("{output}/{sample}_annotations/gutsmash/html")),
+        html_file = temp("{output}/{sample}_annotations/gutsmash/index.html"),
+        js = temp(directory("{output}/{sample}_annotations/gutsmash/js")),
+        regions = temp("{output}/{sample}_annotations/gutsmash/regions.js"),
+        svg = temp(directory("{output}/{sample}_annotations/gutsmash/svg")),
+        main = directory("{output}/{sample}_annotations/gutsmash")
+    params:
+        gut_exec = gutsmash_dir+"/run_gutsmash.py",
+        gbk = "{output}/{sample}_annotations/gutsmash/{sample}.gbk"
+    conda:
+        "config/envs/gutsmash.yml"
+    resources:
+        ncores = ncores,
+    shell:
+        """
+        {params.gut_exec} -c {resources.ncores} --cb-knownclusters --genefinding-gff3 {input.gff} --enable-genefunctions {input.fa} --output-dir {output.main}
+        rm {params.gbk}
+        python scripts/gutsmash2tsv.py {output.main} {wildcard.sample} > {output.tsv}
         """
 
 rule antismash_setup:
