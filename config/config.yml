@@ -4,7 +4,7 @@ input_file: "/rds/user/aa2369/hpc-work/scripts/snakemake/genofan/test/input_file
 
 # Directory containing necessary DBs
 
-db_dir: "/rfs/project/rfs-42V0sRc5Rk8/databases"
+db_dir: "/rds/project/rds-aFEMMKDjWlo/rfs_data/databases"
 gutsmash_dir: "/rds/project/rds-aFEMMKDjWlo/software/gutsmash"
 
 # Number of cores
