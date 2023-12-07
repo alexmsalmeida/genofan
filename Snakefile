@@ -70,24 +70,26 @@ rule prokka:
         prokka --cpus {resources.ncores} {output.fa} --outdir {params.outdir} --prefix {wildcards.sample} --force --locustag {wildcards.sample} --rfam
         """
 
-rule eggnog:
+checkpoint eggnog:
     input:
         "{output}/{sample}_annotations/prokka/{sample}.faa"
     output:
-        outfile = "{output}/{sample}_annotations/eggnog.emapper.annotations",
-        hits = temp("{output}/{sample}_annotations/eggnog.emapper.hits"),
-        orthologs = temp("{output}/{sample}_annotations/eggnog.emapper.seed_orthologs")
+        outfile = "{output}/{sample}_annotations/eggnog.emapper.annotations"
     params:
         out = "{output}/{sample}_annotations",
-        db = db_dir+"/eggnog"
+        db = db_dir+"/eggnog",
+        hits = "{output}/{sample}_annotations/eggnog.emapper.hits",
+        orthologs = "{output}/{sample}_annotations/eggnog.emapper.seed_orthologs",
+        check = "{output}/{sample}_annotations/done.txt"
     conda:
         "config/envs/annotation.yml"
     resources:
         ncores = ncores
     shell:
         """
-        rm -rf {params.out}/*tmp_dmd*
+        rm -rf {params.out}/*tmp_dmd* {params.check}
         emapper.py --cpu {resources.ncores} -i {input} -m diamond -o eggnog --output_dir {params.out} --temp_dir {params.out} --data_dir {params.db} --override
+        rm -rf {params.hits} {params.orthologs}
         """
 
 rule cazy:
@@ -229,7 +231,7 @@ rule antismash_setup:
     shell:
         "download-antismash-databases --database-dir {input}"
 
-rule antismash_run:
+checkpoint antismash_run:
     input:
         gff = "{output}/{sample}_annotations/prokka/{sample}.gff",
         fa = lambda wildcards: samp2path[wildcards.sample],
@@ -241,22 +243,23 @@ rule antismash_run:
         tigrfam = db_dir+"/antismash/tigrfam",
     output:
         tsv = "{output}/{sample}_annotations/antismash/summary.tsv",
-        tmp = temp(directory("{output}/{sample}_annotations/antismash_tmp")),
-        gbk = temp("{output}/{sample}_annotations/antismash/antismash.gbk"),
-        json = temp("{output}/{sample}_annotations/antismash/antismash.json"),
-        css = temp(directory("{output}/{sample}_annotations/antismash/css")),
-        images = temp(directory("{output}/{sample}_annotations/antismash/images")),
-        html = temp("{output}/{sample}_annotations/antismash/index.html"),
-        js = temp(directory("{output}/{sample}_annotations/antismash/js")),
-        regions = temp("{output}/{sample}_annotations/antismash/regions.js"),
-        svg = temp(directory("{output}/{sample}_annotations/antismash/svg")),
         main = directory("{output}/{sample}_annotations/antismash")
     params:
         clstbst_txt = "{output}/{sample}_annotations/antismash/clusterblastoutput.txt",
         kwnclst_txt = "{output}/{sample}_annotations/antismash/knownclusterblastoutput.txt",
         smcogs = "{output}/{sample}_annotations/antismash/smcogs",
         sbclst = "{output}/{sample}_annotations/antismash/subclusterblastoutput.txt",
-        outfa = "{output}/{sample}_annotations/antismash.fa"
+        outfa = "{output}/{sample}_annotations/antismash.fa",
+        tmp = "{output}/{sample}_annotations/antismash_tmp",
+        gbk = "{output}/{sample}_annotations/antismash/antismash.gbk",
+        json = "{output}/{sample}_annotations/antismash/antismash.json",
+        css = "{output}/{sample}_annotations/antismash/css",
+        images = "{output}/{sample}_annotations/antismash/images",
+        html = "{output}/{sample}_annotations/antismash/index.html",
+        js = "{output}/{sample}_annotations/antismash/js",
+        regions = "{output}/{sample}_annotations/antismash/regions.js",
+        svg = "{output}/{sample}_annotations/antismash/svg",
+        check = "{output}/{sample}_annotations/done.txt"
     conda:
         "config/envs/antismash.yml"
     resources:
@@ -264,6 +267,7 @@ rule antismash_run:
         tmpdir = lambda wildcards: wildcards.output+"/"+wildcards.sample+"_annotations/antismash_tmp"
     shell:
         """
+        rm -f {params.check}
         if [[ {input.fa} == *.gz ]]
         then
             gunzip -c {input.fa} > {params.outfa}
@@ -275,7 +279,7 @@ rule antismash_run:
         rm -rf {params}
         """
 
-rule clean_up:
+checkpoint clean_up:
     input:
         prokka = "{output}/{sample}_annotations/prokka/{sample}.faa",
         amr = "{output}/{sample}_annotations/amrfinder_results.tsv",
@@ -298,7 +302,7 @@ rule clean_up:
             rm -rf {input.antis} {params.anti_tmp}"_tmp"
         fi
 
-        if [[ $(find {params.eggnog_tmp} -type d -name "emappertmp_*" | wc -l)  -gt "0" ]]
+        if [[ $(find {params.eggnog_tmp} -type d -name "emappertmp*" | wc -l)  -gt "0" ]]
         then
             rm -rf {input.eggnog}
         fi
