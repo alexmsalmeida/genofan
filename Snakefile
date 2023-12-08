@@ -255,7 +255,8 @@ checkpoint antismash_run:
         json = "{output}/{sample}_annotations/antismash/antismash.json",
         css = "{output}/{sample}_annotations/antismash/css",
         images = "{output}/{sample}_annotations/antismash/images",
-        html = "{output}/{sample}_annotations/antismash/index.html",
+        html_file = "{output}/{sample}_annotations/antismash/index.html",
+        html_dir = "{output}/{sample}_annotations/antismash/html",
         js = "{output}/{sample}_annotations/antismash/js",
         regions = "{output}/{sample}_annotations/antismash/regions.js",
         svg = "{output}/{sample}_annotations/antismash/svg",
@@ -275,8 +276,8 @@ checkpoint antismash_run:
             ln -s {input.fa} {params.outfa}
         fi
         antismash -v -c {resources.ncores} --skip-zip-file --allow-long-headers --databases {input.db} --cc-mibig --cb-general --cb-knownclusters --cb-subclusters --asf --pfam2go --smcog-trees --genefinding-gff3 {input.gff} --output-dir {output.main} --output-basename antismash {params.outfa}
-        python scripts/antismash2tsv.py {output.main} > {output.tsv}
         rm -rf {params}
+        python scripts/antismash2tsv.py {output.main} > {output.tsv}
         """
 
 checkpoint clean_up:
