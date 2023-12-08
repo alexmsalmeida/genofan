@@ -199,6 +199,8 @@ rule gutsmash:
         gut_exec = gutsmash_dir+"/run_gutsmash.py",
         gbk = "{output}/{sample}_annotations/gutsmash/gutsmash.gbk",
         html_dir = directory("{output}/{sample}_annotations/gutsmash/html"),
+        kwnclst_txt = "{output}/{sample}_annotations/gutsmash/knownclusterblastoutput.txt",
+        kwnclst_dir = "{output}/{sample}_annotations/gutsmash/knownclusterblast",
         outfa = "{output}/{sample}_annotations/gutsmash.fa"
     conda:
         "config/envs/gutsmash.yml"
@@ -214,7 +216,7 @@ rule gutsmash:
         fi
         {params.gut_exec} -c {resources.ncores} --cb-knownclusters --genefinding-gff3 {input.gff} --enable-genefunctions {params.outfa} --output-dir {output.main}
         python scripts/gutsmash2tsv.py {output.main} {wildcards.sample} > {output.tsv}
-        rm -rf {params.gbk} {params.html_dir} {params.outfa}
+        rm -rf {params.gbk} {params.html_dir} {params.outfa} {params.kwnclst_txt} {params.kwnclst_dir}
         """
 
 rule antismash_setup:
@@ -298,7 +300,7 @@ checkpoint clean_up:
         anti_tmp = "{output}/{sample}_annotations/antismash",
         eggnog_tmp = "{output}/{sample}_annotations"
     resources:
-        ncores = ncores
+        ncores = 1
     shell:
         """
         if [[ -d {params.anti_tmp}"_tmp" ]]
