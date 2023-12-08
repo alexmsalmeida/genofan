@@ -246,9 +246,12 @@ checkpoint antismash_run:
         main = directory("{output}/{sample}_annotations/antismash")
     params:
         clstbst_txt = "{output}/{sample}_annotations/antismash/clusterblastoutput.txt",
+        clstbst_dir = "{output}/{sample}_annotations/antismash/clusterblast",
         kwnclst_txt = "{output}/{sample}_annotations/antismash/knownclusterblastoutput.txt",
+        kwnclst_dir = "{output}/{sample}_annotations/antismash/knownclusterblast",
         smcogs = "{output}/{sample}_annotations/antismash/smcogs",
-        sbclst = "{output}/{sample}_annotations/antismash/subclusterblastoutput.txt",
+        sbclst_txt = "{output}/{sample}_annotations/antismash/subclusterblastoutput.txt",
+        sbclst_dir = "{output}/{sample}_annotations/antismash/subclusterblast",
         outfa = "{output}/{sample}_annotations/antismash.fa",
         tmp = "{output}/{sample}_annotations/antismash_tmp",
         gbk = "{output}/{sample}_annotations/antismash/antismash.gbk",
