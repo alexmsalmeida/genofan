@@ -282,7 +282,7 @@ checkpoint antismash_run:
         fi
         antismash -v -c {resources.ncores} --skip-zip-file --allow-long-headers --databases {input.db} --cc-mibig --cb-general --cb-knownclusters --cb-subclusters --asf --pfam2go --smcog-trees --genefinding-gff3 {input.gff} --output-dir {output.main} --output-basename antismash {params.outfa}
         rm -rf {params}
-        python scripts/antismash2tsv.py {output.main} > {output.tsv}
+        python scripts/antismash2tsv.py {output.main} {wildcards.samples} > {output.tsv}
         """
 
 checkpoint clean_up:
