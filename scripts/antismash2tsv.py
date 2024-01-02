@@ -13,5 +13,6 @@ for input_file in glob.glob(os.path.join(sys.argv[1], "*.gbk")):
        for record in SeqIO.parse(file_in, "genbank"):
            for feature in record.features:
                if feature.type == "cand_cluster":
-                   print("%s\t%s" % (genome_name, "_".join(feature.qualifiers["product"])))
+                   for cluster in feature.qualifiers["product"]:
+                       print("%s\t%s" % (genome_name, cluster))
     

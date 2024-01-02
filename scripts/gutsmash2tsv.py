@@ -18,6 +18,6 @@ for input_file in glob.glob(os.path.join(sys.argv[1], "*.gbk")):
                    cluster_type = feature.qualifiers["product"]
                    cluster_class = []
                    for cluster in cluster_type:
-                       cluster_class.append(cluster_class_dict[cluster])
-                   print("%s\t%s\t%s\t%s" % (genome_name, cluster_name, "_".join(feature.qualifiers["product"]), "_".join(cluster_class)))
+                       cluster_class = cluster_class_dict[cluster]
+                       print("%s\t%s\t%s\t%s" % (genome_name, cluster_name, cluster, cluster_class))
     
