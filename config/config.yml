@@ -1,6 +1,6 @@
 # Input list of genome files
 
-input_file: "/rds/project/rds-aFEMMKDjWlo/aalmeida/antipath/strains/phylo/GUT_GENOME096063/GUT_GENOME096063_paths.txt"
+input_file: "/rds/project/rds-aFEMMKDjWlo/aalmeida/secretbugs/oscillo/oscillospiracea_hq_paths.txt"
 
 # Directory containing necessary DBs
 

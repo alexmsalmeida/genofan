@@ -43,16 +43,6 @@ rule prokka:
         faa = "{output}/{sample}_annotations/prokka/{sample}.faa",
         ffn = "{output}/{sample}_annotations/prokka/{sample}.ffn",
         gff = "{output}/{sample}_annotations/prokka/{sample}.gff",
-        fa = temp("{output}/{sample}_annotations/prokka/{sample}.fa"),
-        fna = temp("{output}/{sample}_annotations/prokka/{sample}.fna"),
-        err = temp("{output}/{sample}_annotations/prokka/{sample}.err"),
-        fsa = temp("{output}/{sample}_annotations/prokka/{sample}.fsa"),
-        gbk = temp("{output}/{sample}_annotations/prokka/{sample}.gbk"),
-        log = temp("{output}/{sample}_annotations/prokka/{sample}.log"),
-        sqn = temp("{output}/{sample}_annotations/prokka/{sample}.sqn"),
-        tbl = temp("{output}/{sample}_annotations/prokka/{sample}.tbl"),
-        tsv = temp("{output}/{sample}_annotations/prokka/{sample}.tsv"),
-        txt = temp("{output}/{sample}_annotations/prokka/{sample}.txt")
     params:
         outdir = "{output}/{sample}_annotations/prokka",
     conda:
@@ -63,44 +53,37 @@ rule prokka:
         """
         if [[ {input} == *.gz ]]
         then
-            gunzip -c {input} > {output.fa}
+            gunzip -c {input} > {params.outdir}/{wildcards.sample}.fa
         else
-            ln -s {input} {output.fa}
+            ln -s {input} {params.outdir}/{wildcards.sample}.fa
         fi
-        prokka --cpus {resources.ncores} {output.fa} --outdir {params.outdir} --prefix {wildcards.sample} --force --locustag {wildcards.sample} --rfam
+        prokka --cpus {resources.ncores} {params.outdir}/{wildcards.sample}.fa --outdir {params.outdir} --prefix {wildcards.sample} --force --locustag {wildcards.sample} --rfam
+        rm -rf {params.outdir}/*fna {params.outdir}/*err {params.outdir}/*fsa {params.outdir}/*gbk {params.outdir}/*log {params.outdir}/*sqn {params.outdir}/*tbl {params.outdir}/*tsv {params.outdir}/*txt {params.outdir}/{wildcards.sample}.fa
         """
 
-checkpoint eggnog:
+rule eggnog:
     input:
         "{output}/{sample}_annotations/prokka/{sample}.faa"
     output:
         outfile = "{output}/{sample}_annotations/eggnog.emapper.annotations"
     params:
         out = "{output}/{sample}_annotations",
-        db = db_dir+"/eggnog",
-        hits = "{output}/{sample}_annotations/eggnog.emapper.hits",
-        orthologs = "{output}/{sample}_annotations/eggnog.emapper.seed_orthologs",
-        check = "{output}/{sample}_annotations/done.txt"
+        db = db_dir+"/eggnog"
     conda:
         "config/envs/annotation.yml"
     resources:
         ncores = ncores
     shell:
         """
-        rm -rf {params.out}/*tmp_dmd* {params.check}
+        rm -rf {params.out}/*tmp_dmd* {params.out}/done.txt
         emapper.py --cpu {resources.ncores} -i {input} -m diamond -o eggnog --output_dir {params.out} --temp_dir {params.out} --data_dir {params.db} --override
-        rm -rf {params.hits} {params.orthologs}
+        rm -rf {params.out}/eggnog.emapper.hits {params.out}/eggnog.emapper.seed_orthologs
         """
 
 rule cazy:
     input:
         "{output}/{sample}_annotations/prokka/{sample}.faa"
     output:
-        dmd = temp("{output}/{sample}_annotations/diamond.out"),
-        hmmer = temp("{output}/{sample}_annotations/hmmer.out"),
-        hotpep = temp("{output}/{sample}_annotations/Hotpep.out"),
-        uni = temp("{output}/{sample}_annotations/uniInput"),
-        raw = temp("{output}/{sample}_annotations/overview.txt"),
         parsed = "{output}/{sample}_annotations/cazy_results.tsv"
     params:
         out = "{output}/{sample}_annotations",
@@ -112,14 +95,14 @@ rule cazy:
     shell:
         """
         run_dbcan.py --dia_cpu {resources.ncores} --hmm_cpu {resources.ncores} --tf_cpu {resources.ncores} --hotpep_cpu {resources.ncores} {input} protein --db_dir {params.db} --out_dir {params.out}
-        python scripts/dbcan_simplify.py {output.raw} > {output.parsed}
+        python scripts/dbcan_simplify.py {params.out}/overview.txt > {output.parsed}
+        rm -rf {params.out}/diamond.out {params.out}/hmmer.out {params.out}/Hotpep.out {params.out}/uniInput {params.out}/overview.txt
         """
 
 rule kofam:
     input:
         "{output}/{sample}_annotations/prokka/{sample}.faa"
     output:
-        raw = temp("{output}/{sample}_annotations/kofam_raw.tsv"),
         kofam = "{output}/{sample}_annotations/kegg_orthologs.tsv",
         modules = "{output}/{sample}_annotations/kegg_modules.tsv"
     params:
@@ -135,7 +118,8 @@ rule kofam:
     shell:
         """
         python scripts/kofamscan.py -t {resources.ncores} -q {input} -o {params.out} -d {params.db} > /dev/null
-        python scripts/give_pathways.py -i {output.kofam} -d {params.out} -g {params.graph} -n {params.names} -c {params.classes} -o {wildcards.sample}
+        python scripts/give_pathways.py -i {params.out}/kofam_raw.tsv -d {params.out} -g {params.graph} -n {params.names} -c {params.classes} -o {wildcards.sample}
+        rm -rf {params.out}/kofam_raw.tsv
         """
 
 rule amrfinder_setup:
@@ -158,7 +142,6 @@ rule amrfinder_run:
         faa = "{output}/{sample}_annotations/prokka/{sample}.faa",
         fa = lambda wildcards: samp2path[wildcards.sample]
     output:
-        gff = temp("{output}/{sample}_annotations/amrfinder.gff"),
         amr = "{output}/{sample}_annotations/amrfinder_results.tsv"
     params:
         outdir = "{output}/{sample}_annotations",
@@ -175,9 +158,9 @@ rule amrfinder_run:
         else
             ln -s {input.fa} {params.outfa}
         fi
-        grep -w CDS {input.gff} | perl -pe '/^##FASTA/ && exit; s/(\W)Name=/$1OldName=/i; s/ID=([^;]+)/ID=$1;Name=$1/' > {output.gff}
-        amrfinder --threads {resources.ncores} -p {input.faa} -g {output.gff} -n {params.outfa} -o {output.amr} -d {input.db} --plus
-        rm -f {params.outdir}/*.tmp.* {params.outfa}
+        grep -w CDS {input.gff} | perl -pe '/^##FASTA/ && exit; s/(\W)Name=/$1OldName=/i; s/ID=([^;]+)/ID=$1;Name=$1/' > {params.outdir}/amrfinder.gff
+        amrfinder --threads {resources.ncores} -p {input.faa} -g {params.outdir}/amrfinder.gff -n {params.outfa} -o {output.amr} -d {input.db} --plus
+        rm -f {params.outdir}/*.tmp.* {params.outdir}/amrfinder.gff {params.outfa}
         """
 
 rule gutsmash:
@@ -186,21 +169,9 @@ rule gutsmash:
         fa = lambda wildcards: samp2path[wildcards.sample]
     output:
         tsv = "{output}/{sample}_annotations/gutsmash/summary.tsv",
-        zip = temp("{output}/{sample}_annotations/gutsmash/gutsmash.zip"),
-        json = temp("{output}/{sample}_annotations/gutsmash/gutsmash.json"),
-        css = temp(directory("{output}/{sample}_annotations/gutsmash/css")),
-        images = temp(directory("{output}/{sample}_annotations/gutsmash/images")),
-        html_file = temp("{output}/{sample}_annotations/gutsmash/index.html"),
-        js = temp(directory("{output}/{sample}_annotations/gutsmash/js")),
-        regions = temp("{output}/{sample}_annotations/gutsmash/regions.js"),
-        svg = temp(directory("{output}/{sample}_annotations/gutsmash/svg")),
         main = directory("{output}/{sample}_annotations/gutsmash")
     params:
         gut_exec = gutsmash_dir+"/run_gutsmash.py",
-        gbk = "{output}/{sample}_annotations/gutsmash/gutsmash.gbk",
-        html_dir = directory("{output}/{sample}_annotations/gutsmash/html"),
-        kwnclst_txt = "{output}/{sample}_annotations/gutsmash/knownclusterblastoutput.txt",
-        kwnclst_dir = "{output}/{sample}_annotations/gutsmash/knownclusterblast",
         outfa = "{output}/{sample}_annotations/gutsmash.fa"
     conda:
         "config/envs/gutsmash.yml"
@@ -216,7 +187,7 @@ rule gutsmash:
         fi
         {params.gut_exec} -c {resources.ncores} --cb-knownclusters --genefinding-gff3 {input.gff} --enable-genefunctions {params.outfa} --output-dir {output.main}
         python scripts/gutsmash2tsv.py {output.main} {wildcards.sample} > {output.tsv}
-        rm -rf {params.gbk} {params.html_dir} {params.outfa} {params.kwnclst_txt} {params.kwnclst_dir}
+        rm -rf {output.main}/gutsmash.gbk {output.main}/gutsmash.zip {output.main}/gutsmash.fa {output.main}/html {output.main}/knownclusterblast* {output.main}/gutsmash.json {output.main}/css {output.main}/images {output.main}/index.html {output.main}/js {output.main}/regions.js {output.main}/svg
         """
 
 rule antismash_setup:
@@ -233,7 +204,7 @@ rule antismash_setup:
     shell:
         "download-antismash-databases --database-dir {input}"
 
-checkpoint antismash_run:
+rule antismash_run:
     input:
         gff = "{output}/{sample}_annotations/prokka/{sample}.gff",
         fa = lambda wildcards: samp2path[wildcards.sample],
@@ -247,25 +218,8 @@ checkpoint antismash_run:
         tsv = "{output}/{sample}_annotations/antismash/summary.tsv",
         main = directory("{output}/{sample}_annotations/antismash")
     params:
-        clstbst_txt = "{output}/{sample}_annotations/antismash/clusterblastoutput.txt",
-        clstbst_dir = "{output}/{sample}_annotations/antismash/clusterblast",
-        kwnclst_txt = "{output}/{sample}_annotations/antismash/knownclusterblastoutput.txt",
-        kwnclst_dir = "{output}/{sample}_annotations/antismash/knownclusterblast",
-        smcogs = "{output}/{sample}_annotations/antismash/smcogs",
-        sbclst_txt = "{output}/{sample}_annotations/antismash/subclusterblastoutput.txt",
-        sbclst_dir = "{output}/{sample}_annotations/antismash/subclusterblast",
         outfa = "{output}/{sample}_annotations/antismash.fa",
-        tmp = "{output}/{sample}_annotations/antismash_tmp",
-        gbk = "{output}/{sample}_annotations/antismash/antismash.gbk",
-        json = "{output}/{sample}_annotations/antismash/antismash.json",
-        css = "{output}/{sample}_annotations/antismash/css",
-        images = "{output}/{sample}_annotations/antismash/images",
-        html_file = "{output}/{sample}_annotations/antismash/index.html",
-        html_dir = "{output}/{sample}_annotations/antismash/html",
-        js = "{output}/{sample}_annotations/antismash/js",
-        regions = "{output}/{sample}_annotations/antismash/regions.js",
-        svg = "{output}/{sample}_annotations/antismash/svg",
-        check = "{output}/{sample}_annotations/done.txt"
+        parent = "{output}/{sample}_annotations"
     conda:
         "config/envs/antismash.yml"
     resources:
@@ -273,7 +227,7 @@ checkpoint antismash_run:
         tmpdir = lambda wildcards: wildcards.output+"/"+wildcards.sample+"_annotations/antismash_tmp"
     shell:
         """
-        rm -f {params.check}
+        rm -f {params.parent}/done.txt
         if [[ {input.fa} == *.gz ]]
         then
             gunzip -c {input.fa} > {params.outfa}
@@ -281,11 +235,11 @@ checkpoint antismash_run:
             ln -s {input.fa} {params.outfa}
         fi
         antismash -v -c {resources.ncores} --skip-zip-file --allow-long-headers --databases {input.db} --cc-mibig --cb-general --cb-knownclusters --cb-subclusters --asf --pfam2go --smcog-trees --genefinding-gff3 {input.gff} --output-dir {output.main} --output-basename antismash {params.outfa}
-        rm -rf {params}
-        python scripts/antismash2tsv.py {output.main} {wildcards.samples} > {output.tsv}
+        rm -rf {output.main}/clusterblast* {output.main}/knownclusterblast* {output.main}/smcogs {output.main}/subcluster* {output.main}_tmp {output.main}/antismash.gbk {output.main}/antismash.json {output.main}/css {output.main}/images {output.main}/index.html {output.main}/html {output.main}/js {output.main}/regions.js {output.main}/svg {params.outfa}
+        python scripts/antismash2tsv.py {output.main} {wildcards.sample} > {output.tsv}
         """
 
-checkpoint clean_up:
+rule clean_up:
     input:
         prokka = "{output}/{sample}_annotations/prokka/{sample}.faa",
         amr = "{output}/{sample}_annotations/amrfinder_results.tsv",
