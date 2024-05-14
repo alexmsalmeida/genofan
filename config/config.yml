@@ -1,6 +1,6 @@
 # Input list of genome files
 
-input_file: "/rds/project/rds-aFEMMKDjWlo/aalmeida/secretbugs/oscillo/oscillospiracea_hq_paths.txt"
+input_file: "/rds/project/rds-aFEMMKDjWlo/aalmeida/project_ecoevo/genofan/candidate_species_paths.txt"
 
 # Directory containing necessary DBs
 

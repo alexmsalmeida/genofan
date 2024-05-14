@@ -55,7 +55,7 @@ rule prokka:
         then
             gunzip -c {input} > {params.outdir}/{wildcards.sample}.fa
         else
-            ln -s {input} {params.outdir}/{wildcards.sample}.fa
+            ln -fs {input} {params.outdir}/{wildcards.sample}.fa
         fi
         prokka --cpus {resources.ncores} {params.outdir}/{wildcards.sample}.fa --outdir {params.outdir} --prefix {wildcards.sample} --force --locustag {wildcards.sample} --rfam
         rm -rf {params.outdir}/*fna {params.outdir}/*err {params.outdir}/*fsa {params.outdir}/*gbk {params.outdir}/*log {params.outdir}/*sqn {params.outdir}/*tbl {params.outdir}/*tsv {params.outdir}/*txt {params.outdir}/{wildcards.sample}.fa
@@ -156,7 +156,7 @@ rule amrfinder_run:
         then
             gunzip -c {input.fa} > {params.outfa}
         else
-            ln -s {input.fa} {params.outfa}
+            ln -fs {input.fa} {params.outfa}
         fi
         grep -w CDS {input.gff} | perl -pe '/^##FASTA/ && exit; s/(\W)Name=/$1OldName=/i; s/ID=([^;]+)/ID=$1;Name=$1/' > {params.outdir}/amrfinder.gff
         amrfinder --threads {resources.ncores} -p {input.faa} -g {params.outdir}/amrfinder.gff -n {params.outfa} -o {output.amr} -d {input.db} --plus
@@ -183,7 +183,7 @@ rule gutsmash:
         then
             gunzip -c {input.fa} > {params.outfa}
         else
-            ln -s {input.fa} {params.outfa}
+            ln -fs {input.fa} {params.outfa}
         fi
         {params.gut_exec} -c {resources.ncores} --cb-knownclusters --genefinding-gff3 {input.gff} --enable-genefunctions {params.outfa} --output-dir {output.main}
         python scripts/gutsmash2tsv.py {output.main} {wildcards.sample} > {output.tsv}
@@ -216,6 +216,7 @@ rule antismash_run:
         tigrfam = db_dir+"/antismash/tigrfam",
     output:
         tsv = "{output}/{sample}_annotations/antismash/summary.tsv",
+        json = "{output}/{sample}_annotations/antismash/antismash.json",
         main = directory("{output}/{sample}_annotations/antismash")
     params:
         outfa = "{output}/{sample}_annotations/antismash.fa",
@@ -232,10 +233,10 @@ rule antismash_run:
         then
             gunzip -c {input.fa} > {params.outfa}
         else
-            ln -s {input.fa} {params.outfa}
+            ln -fs {input.fa} {params.outfa}
         fi
         antismash -v -c {resources.ncores} --skip-zip-file --allow-long-headers --databases {input.db} --cc-mibig --cb-general --cb-knownclusters --cb-subclusters --asf --pfam2go --smcog-trees --genefinding-gff3 {input.gff} --output-dir {output.main} --output-basename antismash {params.outfa}
-        rm -rf {output.main}/clusterblast* {output.main}/knownclusterblast* {output.main}/smcogs {output.main}/subcluster* {output.main}_tmp {output.main}/antismash.gbk {output.main}/antismash.json {output.main}/css {output.main}/images {output.main}/index.html {output.main}/html {output.main}/js {output.main}/regions.js {output.main}/svg {params.outfa}
+        rm -rf {output.main}/clusterblast* {output.main}/smcogs {output.main}/subcluster* {output.main}_tmp {output.main}/antismash.gbk {output.main}/css {output.main}/images {output.main}/index.html {output.main}/html {output.main}/js {output.main}/regions.js {output.main}/svg {params.outfa}
         python scripts/antismash2tsv.py {output.main} {wildcards.sample} > {output.tsv}
         """
 
