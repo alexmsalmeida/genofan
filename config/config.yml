@@ -1,6 +1,6 @@
 # Input list of genome files
 
-input_file: "/rds/project/rds-aFEMMKDjWlo/aalmeida/project_ecoevo/genofan/candidate_species_paths.txt"
+input_file: "/rds/user/aa2369/hpc-work/scripts/snakemake/genofan/test/input_files2.txt"
 
 # Directory containing necessary DBs
 

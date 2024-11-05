@@ -287,6 +287,7 @@ default="/nfs/production/interpro/metagenomics/mags-scripts/pipelines/kegg-cwl/p
         args = parser.parse_args()
         graphs, pathway_names, pathway_classes = download_pathways(args.graphs, args.names, args.classes)
         edges, dict_KO_by_contigs = get_list_items(args.input_file)
+        print(edges)
         name_output_summary = args.outdir + "/kegg_modules.tsv"
 
         # COMMON INFO

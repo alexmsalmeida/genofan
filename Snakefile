@@ -118,7 +118,7 @@ rule kofam:
     shell:
         """
         python scripts/kofamscan.py -t {resources.ncores} -q {input} -o {params.out} -d {params.db} > /dev/null
-        python scripts/give_pathways.py -i {params.out}/kofam_raw.tsv -d {params.out} -g {params.graph} -n {params.names} -c {params.classes} -o {wildcards.sample}
+        python scripts/give_pathways.py -i {output.kofam} -d {params.out} -g {params.graph} -n {params.names} -c {params.classes} -o {wildcards.sample}
         rm -rf {params.out}/kofam_raw.tsv
         """
 
