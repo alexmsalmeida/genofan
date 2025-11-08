@@ -186,9 +186,9 @@ rule gutsmash:
             ln -fs {input.fa} {params.outfa}
         fi
         {params.gut_exec} -c {resources.ncores} --cb-knownclusters --genefinding-gff3 {input.gff} --enable-genefunctions {params.outfa} --output-dir {output.main}
-        python scripts/gutsmash2tsv.py {output.main} {wildcards.sample} > {output.tsv}
         rm -rf {output.main}/gutsmash.gbk {output.main}/gutsmash.zip {output.main}/gutsmash.fa {output.main}/html {output.main}/knownclusterblast* {output.main}/gutsmash.json {output.main}/css {output.main}/images {output.main}/index.html {output.main}/js {output.main}/regions.js {output.main}/svg
-        """
+        python scripts/gutsmash2tsv.py {output.main} {wildcards.sample} > {output.tsv}
+	"""
 
 rule antismash_setup:
     input:

@@ -1,3 +1,3 @@
-/rds/project/rds-aFEMMKDjWlo/aalmeida/genofan_test/GUT_GENOME064710.fa.gz
-/rds/project/rds-aFEMMKDjWlo/aalmeida/genofan_test/GUT_GENOME076420.fa.gz
-/rds/project/rds-aFEMMKDjWlo/aalmeida/genofan_test/GUT_GENOME124533.fa.gz
+/rds/project/rds-aFEMMKDjWlo/aalmeida/tests/genofan_test/GUT_GENOME064710.fa.gz
+/rds/project/rds-aFEMMKDjWlo/aalmeida/tests/genofan_test/GUT_GENOME076420.fa.gz
+/rds/project/rds-aFEMMKDjWlo/aalmeida/tests/genofan_test/GUT_GENOME124533.fa.gz

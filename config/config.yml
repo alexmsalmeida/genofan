@@ -1,6 +1,6 @@
 # Input list of genome files
 
-input_file: "/rds/user/aa2369/hpc-work/scripts/snakemake/genofan/test/input_files2.txt"
+input_file: "/rds/project/rds-aFEMMKDjWlo/aalmeida/project_secretbugs/genofan/cag170_ecology/genomes_missing_paths.txt"
 
 # Directory containing necessary DBs
 
